@@ -1,3 +1,5 @@
+(load-file "zet-mode.el")
+
 (ert-deftest example ()
   (should (= 2 (+ 1 1))))
 

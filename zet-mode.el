@@ -46,6 +46,17 @@
             like-string
             "?"))))
 
+(defun zet--org-roam-files-with-no-links ()
+  "Return a list of Org-roam files with no incoming or outgoing links."
+  (interactive)
+  (let* ((query "SELECT file FROM nodes WHERE id NOT IN (SELECT source FROM links) AND id NOT IN (SELECT dest FROM links);")
+         (result (org-roam-db-query query)))
+    (if result
+        (let ((files (mapcar (lambda (result) (zet--strip-directory (car result))) result)))
+          files)
+      (message "No files found with no links."))))
+
+
 (defun zet--files-containing-string (files string)
   (let (result)
     (dolist (file files)
@@ -293,6 +304,12 @@
    (list (zet--all-files-sorted-by-ts)))
   (goto-char (point-min)))
 
+(defun zet-print-isolated-files ()
+  (interactive)
+  (zet--print-columns
+   (list (zet--org-roam-files-with-no-links)))
+  (goto-char (point-min)))
+
 (defun zet-print-files-containing-strings (strings)
   (interactive "sEnter strings:")
   (zet--print-columns
@@ -373,27 +390,20 @@
     (zet-view-file)
     (zet-mode)))
 
+(defun zet--current-ids ()
+  (mapcar #'car
+          (org-roam-db-query
+           [:select [id]
+                    :from nodes
+                    :where (like file "%zet?_%.org")
+                    :or (like file "%bib?_%.org")
+                    :escape $r1]
+           "?")))
+
+
 (global-set-key (kbd "C-c z") 'zet-main)
 
 (defmacro zet--local (&rest body)
   `(lambda () (interactive) ,@body))
 
-(general-define-key
- :keymaps 'zet-mode-map
- :states 'normal
- "p" 'zet-print-link-map
- "u" 'zet--print-all-files
- "s" 'zet-print-files-containing-strings
- "l" (zet--local (zet-next-text-object) (zet-view-file))
- "h" (zet--local (zet-prev-text-object) (zet-view-file))
- "x" 'zet-link
- "v" 'zet-view-file
- "a" 'zet--mark-from
- "b" 'zet--mark-to
- "c" (zet--local (zet--org-roam-capture-continuation-note (zet--file-at-point)))
- "i" (zet--local (zet--org-roam-capture-continuation-bib (zet--file-at-point)))
- "RET" (zet--local (zet--set-selected-node) (zet-print-link-map))
- "j" (zet--local (evil-next-visual-line) (zet-view-file))
- "k" (zet--local (evil-previous-visual-line) (zet-view-file))
- ;; TODO Remove this hack
- "r" (zet--local (zet-randomize-selected-node) (zet-print-link-map)))
+(provide 'zet-mode)
