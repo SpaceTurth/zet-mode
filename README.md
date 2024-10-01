@@ -8,8 +8,11 @@ For more information on this system, I'd recommend the book [How to take Smart N
 ## Why this mode?
 It's fun to collect little notes using [org-roam](https://www.orgroam.com/) but the resulting notes are not really structured in the same way as Luhmann's original zettelkasten.
 The main issue is that org roam doesn't encourage the treelike branching structure of links that Luhmann considered so helpful.
-This mode adds two main views for displaying your notes: as one big list in chronological order (making it easier to pick up lines of thought you were just working on) and as a list of three columns, a selected note, the notes that link to it, and the notes that it links to.
-Navigating between the different columns allows you to easily browse different lines of notes.
+This mode adds:
+- A way to view of all your notes in chronological order.
+- A way to view a current "selected" note, all the notes that link to it, and all the notes that it links to. Navigating between the three different columns allows you to easily browse different lines of thought.
+- Commands to start capturing new thought notes or bibliographic notes continuing on from the current note.
+- Commands to capture new thought notes or bibliographic notes.
 
 ## Any fun pictures?
 Sure! This is what the main timeline view looks like:
